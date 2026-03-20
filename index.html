@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eid Mubarak 2026 - Card Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:wght@400;500&family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2d4f 50%, #0d1b2a 100%);
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    gap: 24px;
+  }
+
+  /* ─── Controls Panel ─── */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+  }
+
+  .controls label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+  }
+
+  .controls input[type="text"] {
+    flex: 1;
+    min-width: 180px;
+    padding: 10px 16px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .controls input[type="text"]:focus {
+    border-color: #d4af37;
+  }
+
+  .controls input[type="text"]::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+
+  .controls select {
+    padding: 10px 14px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23d4af37' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .controls select option {
+    background: #1b2d4f;
+    color: #fff;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-apply {
+    background: linear-gradient(135deg, #d4af37, #b8941f);
+    color: #1a1a1a;
+  }
+  .btn-apply:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,175,55,0.3); }
+
+  .btn-download {
+    background: linear-gradient(135deg, #2c5f2d, #1e4620);
+    color: #f0d060;
+  }
+  .btn-download:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(44,95,45,0.3); }
+
+  .btn-download.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    width: 680px;
+    max-width: 100%;
+    background: linear-gradient(160deg, #fefcf3 0%, #fff8e7 40%, #fef5d4 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(212,175,55,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+    position: relative;
+  }
+
+  /* Gold border accent */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 2px solid rgba(212,175,55,0.25);
+    border-radius: 18px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Corner ornaments */
+  .ornament {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    z-index: 3;
+    opacity: 0.2;
+  }
+  .ornament.top-left { top: 16px; left: 16px; }
+  .ornament.top-right { top: 16px; right: 16px; transform: scaleX(-1); }
+  .ornament.bottom-left { bottom: 16px; left: 16px; transform: scaleY(-1); }
+  .ornament.bottom-right { bottom: 16px; right: 16px; transform: scale(-1); }
+
+  .ornament svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Subtle pattern overlay */
+  .pattern-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(212,175,55,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(212,175,55,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Geometric band at top */
+  .geo-band {
+    height: 6px;
+    background: linear-gradient(90deg,
+      #d4af37 0%, #f0d060 25%, #d4af37 50%, #f0d060 75%, #d4af37 100%);
+    opacity: 0.7;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 44px 40px 12px;
+    position: relative;
+  }
+
+  .crescent-star {
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .crescent-star svg {
+    width: 70px;
+    height: 70px;
+    filter: drop-shadow(0 2px 8px rgba(212,175,55,0.3));
+  }
+
+  .arabic-main {
+    font-family: 'Amiri', serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: #2c1810;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    direction: rtl;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .eid-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #b8941f;
+    margin-bottom: 8px;
+  }
+
+  .main-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #2c1810;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: #8b6914;
+    margin-top: 6px;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 60px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  }
+
+  .divider-diamond {
+    width: 8px;
+    height: 8px;
+    background: #d4af37;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  /* Recipient name */
+  .recipient-section {
+    text-align: center;
+    padding: 0 40px;
+  }
+
+  .recipient-name {
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c5f2d;
+    font-style: italic;
+    background: linear-gradient(135deg, #2c5f2d, #3a7d3f);
+    color: #f0d060;
+    padding: 8px 28px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .recipient-name:empty {
+    display: none;
+  }
+
+  /* Message body */
+  .message {
+    padding: 14px 50px 24px;
+    text-align: center;
+  }
+
+  .arabic-dua {
+    font-family: 'Amiri', serif;
+    font-size: 26px;
+    color: #2c5f2d;
+    margin-bottom: 6px;
+    line-height: 1.6;
+    direction: rtl;
+  }
+
+  .dua-translit {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: #8b6914;
+    font-style: italic;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .dua-translation {
+    font-size: 12px;
+    color: #7a7a6a;
+    font-style: italic;
+    margin-bottom: 24px;
+    font-family: 'Lora', serif;
+  }
+
+  .message-text {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: #3d3225;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .message-text p {
+    margin-bottom: 14px;
+  }
+
+  .message-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Lantern row */
+  .lantern-row {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 8px 0 4px;
+  }
+
+  .lantern svg {
+    width: 36px;
+    height: 56px;
+    filter: drop-shadow(0 2px 6px rgba(212,175,55,0.3));
+  }
+
+  /* Signature */
+  .signature {
+    text-align: center;
+    padding: 12px 40px 8px;
+  }
+
+  .signature-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #2c1810;
+  }
+
+  .family-banner {
+    display: inline-block;
+    background: linear-gradient(135deg, #2c1810, #4a2c1a);
+    color: #f0d060;
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 6px;
+  }
+
+  /* Dua items */
+  .dua-item {
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .dua-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .dua-item .arabic-dua {
+    margin-bottom: 4px;
+  }
+
+  .dua-item .dua-translit {
+    margin-bottom: 2px;
+  }
+
+  .dua-item .dua-translation {
+    margin-bottom: 0;
+  }
+
+  .dua-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .dua-separator-dot {
+    width: 4px;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 50%;
+    opacity: 0.4;
+  }
+
+  /* Mosque silhouette at bottom */
+  .mosque-band {
+    position: relative;
+    height: 50px;
+    overflow: hidden;
+  }
+
+  .mosque-band svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Download status */
+  .status-msg {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    min-height: 18px;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header { padding: 32px 24px 10px; }
+    .arabic-main { font-size: 42px; }
+    .main-title { font-size: 30px; }
+    .message { padding: 10px 28px 20px; }
+    .message-text { font-size: 14px; }
+    .controls { padding: 12px 16px; }
+    .recipient-name { font-size: 26px; }
+    .lantern-row { gap: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Controls -->
+<div class="controls">
+  <label for="nameInput">Recipient:</label>
+  <input type="text" id="nameInput" placeholder="Enter name (leave blank for generic)">
+  <label for="senderInput">From:</label>
+  <input type="text" id="senderInput" placeholder="Shaid & Family" value="Shaid & Family">
+  <select id="themeSelect">
+    <option value="cream">Cream & Gold</option>
+    <option value="dark">Navy & Gold</option>
+    <option value="emerald">Emerald & Gold</option>
+    <option value="royal">Royal Purple</option>
+    <option value="rose">Rose & Blush</option>
+  </select>
+  <button class="btn" onclick="randomTheme()" style="background: rgba(212,175,55,0.15); color: #d4af37; padding: 10px 12px; font-size: 13px;" title="Random theme">Shuffle Theme</button>
+  <select id="duaCountSelect">
+    <option value="1">1 Dua</option>
+    <option value="2">+ 1 extra</option>
+    <option value="3" selected>+ 2 extra</option>
+    <option value="4">+ 3 extra</option>
+    <option value="all">All Duas</option>
+  </select>
+  <button class="btn" onclick="randomDuas()" style="background: rgba(212,175,55,0.15); color: #d4af37; padding: 10px 12px; font-size: 13px;" title="Random duas">Shuffle Duas</button>
+  <button class="btn btn-apply" onclick="applyCard()">Apply</button>
+  <button class="btn btn-download" id="downloadBtn" onclick="downloadCard()">Download</button>
+</div>
+
+<!-- Bulk Mode -->
+<div class="controls" style="flex-direction: column; gap: 10px;">
+  <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+    <label style="white-space: nowrap;">Bulk Names:</label>
+    <span style="font-size: 11px; color: rgba(255,255,255,0.4);">One name per line, or comma-separated</span>
+  </div>
+  <textarea id="bulkNames" rows="4" placeholder="Ahmed&#10;Fatima&#10;Uncle Rafiq&#10;Zainab Aunty" style="
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    resize: vertical;
+    line-height: 1.6;
+  "></textarea>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <button class="btn btn-download" id="bulkBtn" onclick="bulkDownload()">Download All Cards</button>
+    <span id="bulkProgress" style="font-size: 12px; color: rgba(255,255,255,0.5);"></span>
+  </div>
+</div>
+
+<div class="status-msg" id="statusMsg"></div>
+
+<!-- Card -->
+<div class="card" id="eidCard">
+  <div class="geo-band"></div>
+  <div class="pattern-overlay"></div>
+
+  <!-- Corner ornaments -->
+  <div class="ornament top-left">
+    <svg viewBox="0 0 80 80" fill="none">
+      <path d="M0 0 Q40 5 75 75 Q35 40 0 0Z" fill="#d4af37"/>
+      <path d="M0 20 Q30 25 55 55 Q25 30 0 20Z" fill="#d4af37" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="ornament top-right">
+    <svg viewBox="0 0 80 80" fill="none">
+      <path d="M0 0 Q40 5 75 75 Q35 40 0 0Z" fill="#d4af37"/>
+      <path d="M0 20 Q30 25 55 55 Q25 30 0 20Z" fill="#d4af37" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="ornament bottom-left">
+    <svg viewBox="0 0 80 80" fill="none">
+      <path d="M0 0 Q40 5 75 75 Q35 40 0 0Z" fill="#d4af37"/>
+      <path d="M0 20 Q30 25 55 55 Q25 30 0 20Z" fill="#d4af37" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="ornament bottom-right">
+    <svg viewBox="0 0 80 80" fill="none">
+      <path d="M0 0 Q40 5 75 75 Q35 40 0 0Z" fill="#d4af37"/>
+      <path d="M0 20 Q30 25 55 55 Q25 30 0 20Z" fill="#d4af37" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div class="content">
+    <!-- Header -->
+    <div class="header">
+      <div class="crescent-star">
+        <svg viewBox="0 0 100 100" fill="none">
+          <path d="M55 10 C30 10 10 30 10 55 C10 80 30 95 55 95 C35 90 22 72 22 55 C22 35 38 18 55 10Z" fill="#d4af37"/>
+          <polygon points="72,30 74,38 82,38 76,43 78,51 72,46 66,51 68,43 62,38 70,38" fill="#d4af37"/>
+        </svg>
+      </div>
+      <div class="eid-label">Eid al-Fitr 2026</div>
+      <div class="arabic-main">عيد مبارك</div>
+      <div class="main-title">Eid Mubarak</div>
+      <div class="subtitle">May peace be upon you</div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Recipient -->
+    <div class="recipient-section">
+      <div class="recipient-name" id="recipientDisplay"></div>
+    </div>
+
+    <!-- Duas Section -->
+    <div class="message" id="duasSection">
+      <!-- Duas will be rendered here by JS -->
+    </div>
+
+    <!-- Message -->
+    <div class="message" style="padding-top: 0;">
+      <div class="message-text">
+        <p>
+          May the blessings of Ramadan continue to shine upon you and your family.
+          Wishing you a joyous Eid filled with peace, love, and togetherness.
+        </p>
+        <p>
+          May Allah shower you with His mercy, grant you good health,
+          and fill your heart with happiness on this blessed day and always.
+        </p>
+      </div>
+    </div>
+
+    <!-- Lanterns -->
+    <div class="lantern-row">
+      <div class="lantern">
+        <svg viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="0" x2="20" y2="10" stroke="#d4af37" stroke-width="1"/>
+          <path d="M13 10 Q20 5 27 10" fill="#b8941f"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="#d4af37" opacity="0.3"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="url(#lg1)" opacity="0.7"/>
+          <line x1="12" y1="18" x2="28" y2="18" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="26" x2="28" y2="26" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="34" x2="28" y2="34" stroke="#b8941f" stroke-width="0.5"/>
+          <path d="M13 40 Q20 46 27 40" fill="#b8941f"/>
+          <line x1="20" y1="46" x2="20" y2="54" stroke="#d4af37" stroke-width="1"/>
+          <circle cx="20" cy="56" r="2" fill="#d4af37"/>
+          <defs>
+            <radialGradient id="lg1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff8e7" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#d4af37" stop-opacity="0.2"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="lantern">
+        <svg viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="0" x2="20" y2="10" stroke="#d4af37" stroke-width="1"/>
+          <path d="M13 10 Q20 5 27 10" fill="#b8941f"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="#d4af37" opacity="0.3"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="url(#lg1)" opacity="0.7"/>
+          <line x1="12" y1="18" x2="28" y2="18" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="26" x2="28" y2="26" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="34" x2="28" y2="34" stroke="#b8941f" stroke-width="0.5"/>
+          <path d="M13 40 Q20 46 27 40" fill="#b8941f"/>
+          <line x1="20" y1="46" x2="20" y2="54" stroke="#d4af37" stroke-width="1"/>
+          <circle cx="20" cy="56" r="2" fill="#d4af37"/>
+        </svg>
+      </div>
+      <div class="lantern">
+        <svg viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="0" x2="20" y2="10" stroke="#d4af37" stroke-width="1"/>
+          <path d="M13 10 Q20 5 27 10" fill="#b8941f"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="#d4af37" opacity="0.3"/>
+          <rect x="12" y="10" width="16" height="30" rx="3" fill="url(#lg1)" opacity="0.7"/>
+          <line x1="12" y1="18" x2="28" y2="18" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="26" x2="28" y2="26" stroke="#b8941f" stroke-width="0.5"/>
+          <line x1="12" y1="34" x2="28" y2="34" stroke="#b8941f" stroke-width="0.5"/>
+          <path d="M13 40 Q20 46 27 40" fill="#b8941f"/>
+          <line x1="20" y1="46" x2="20" y2="54" stroke="#d4af37" stroke-width="1"/>
+          <circle cx="20" cy="56" r="2" fill="#d4af37"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Signature -->
+    <div class="signature">
+      <div class="signature-text">With love and prayers,</div>
+      <div class="family-banner">Shaid & Family</div>
+    </div>
+
+    <!-- Bottom spacing -->
+    <div style="padding-bottom: 8px;"></div>
+  </div>
+
+  <!-- Mosque silhouette -->
+  <div class="mosque-band">
+    <svg viewBox="0 0 680 50" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mosqueG" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#d4af37" stop-opacity="0.08"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="680" height="50" fill="url(#mosqueG)"/>
+      <g fill="#d4af37" opacity="0.12">
+        <rect x="80" y="20" width="6" height="30"/>
+        <polygon points="80,20 83,10 86,20"/>
+        <path d="M200 50 L200 30 Q240 5 280 30 L280 50Z"/>
+        <path d="M300 50 L300 25 Q340 0 380 25 L380 50Z"/>
+        <path d="M400 50 L400 30 Q440 5 480 30 L480 50Z"/>
+        <rect x="594" y="20" width="6" height="30"/>
+        <polygon points="594,20 597,10 600,20"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="geo-band"></div>
+</div>
+
+<!-- html2canvas CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  const duas = [
+    {
+      arabic: 'تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُم',
+      translit: 'Taqabbal Allahu minna wa minkum',
+      translation: '"May Allah accept from us and from you"'
+    },
+    {
+      arabic: 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيم',
+      translit: 'Rabbana taqabbal minna innaka antas-Sami\'ul-\'Aleem',
+      translation: '"Our Lord, accept from us. Indeed, You are the All-Hearing, the All-Knowing." (Quran 2:127)'
+    },
+    {
+      arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّار',
+      translit: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina \'adhaban-nar',
+      translation: '"Our Lord, give us good in this world and good in the Hereafter, and save us from the Fire." (Quran 2:201)'
+    },
+    {
+      arabic: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+      translit: 'Rabbana hab lana min azwajina wa dhurriyyatina qurrata a\'yunin waj\'alna lil-muttaqina imama',
+      translation: '"Our Lord, grant us from our spouses and offspring comfort to our eyes and make us leaders for the righteous." (Quran 25:74)'
+    },
+    {
+      arabic: 'اللَّهُمَّ بَارِكْ لَنَا فِي حَيَاتِنَا وَصِحَّتِنَا وَأَعْمَالِنَا',
+      translit: "Allahumma barik lana fi hayatina wa sihhatina wa a'malina",
+      translation: '"O Allah, bless us in our lives, our health, and our endeavors."'
+    },
+    {
+      arabic: 'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',
+      translit: "Allahumma innaka 'afuwwun tuhibbul-'afwa fa'fu 'anni",
+      translation: '"O Allah, You are the Most Forgiving, You love to forgive, so forgive me."'
+    },
+    {
+      arabic: 'اللَّهُمَّ بَارِكْ لَنَا فِي عِيدِنَا وَاجْعَلْهُ عِيدَ خَيْرٍ وَبَرَكَة',
+      translit: "Allahumma barik lana fi 'eidina waj'alhu 'eida khayrin wa barakah",
+      translation: '"O Allah, bless us on our Eid and make it an Eid of goodness and blessing."'
+    },
+    {
+      arabic: 'اللَّهُمَّ اجْعَلْنَا مِنَ السُّعَدَاءِ فِي الدُّنْيَا وَالْآخِرَةِ',
+      translit: "Allahummaj'alna minas-su'ada'i fid-dunya wal-akhirah",
+      translation: '"O Allah, make us among the happy ones in this world and the Hereafter."'
+    }
+  ];
+
+  function applyCard() {
+    const name = document.getElementById('nameInput').value.trim();
+    const sender = document.getElementById('senderInput').value.trim() || 'Shaid & Family';
+    const display = document.getElementById('recipientDisplay');
+    const banner = document.querySelector('.family-banner');
+
+    if (name) {
+      display.textContent = 'Dear ' + name + ',';
+    } else {
+      display.textContent = '';
+    }
+
+    banner.textContent = sender;
+
+    const theme = document.getElementById('themeSelect').value;
+    applyTheme(theme);
+    renderDuas();
+  }
+
+  // Current extra duas selection (indices into duas array, excluding index 0)
+  let currentExtraDuas = [];
+
+  function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pickExtraDuas(count) {
+    // Pool = all duas except index 0 (which is always shown)
+    const pool = duas.slice(1).map((d, i) => i + 1);
+    const shuffled = shuffleArray(pool);
+    currentExtraDuas = shuffled.slice(0, count);
+  }
+
+  function renderDuas() {
+    const countVal = document.getElementById('duaCountSelect').value;
+    const extraCount = countVal === 'all' ? duas.length - 1 : Math.max(0, parseInt(countVal) - 1);
+
+    // If we don't have extras picked yet, or count changed, pick them
+    if (currentExtraDuas.length !== extraCount) {
+      pickExtraDuas(extraCount);
+    }
+
+    // Always start with dua 0, then add the extras
+    const selected = [duas[0], ...currentExtraDuas.map(i => duas[i])];
+    const container = document.getElementById('duasSection');
+
+    let html = '';
+    selected.forEach((d, i) => {
+      const isLong = d.arabic.length > 60;
+      const arabicSize = isLong ? '20px' : '26px';
+      const translitSize = isLong ? '11px' : '14px';
+
+      html += `<div class="dua-item">
+        <div class="arabic-dua" style="font-size: ${arabicSize}">${d.arabic}</div>
+        <div class="dua-translit" style="font-size: ${translitSize}">${d.translit}</div>
+        <div class="dua-translation">${d.translation}</div>
+      </div>`;
+
+      if (i < selected.length - 1) {
+        html += `<div class="dua-separator">
+          <div class="dua-separator-dot"></div>
+          <div class="dua-separator-dot"></div>
+          <div class="dua-separator-dot"></div>
+        </div>`;
+      }
+    });
+
+    container.innerHTML = html;
+
+    // Re-apply theme colors to new dua elements
+    const theme = document.getElementById('themeSelect').value;
+    applyTheme(theme);
+  }
+
+  function randomDuas() {
+    const countVal = document.getElementById('duaCountSelect').value;
+    const extraCount = countVal === 'all' ? duas.length - 1 : Math.max(0, parseInt(countVal) - 1);
+    pickExtraDuas(extraCount);
+    renderDuas();
+  }
+
+  function randomTheme() {
+    const themeSelect = document.getElementById('themeSelect');
+    const options = [...themeSelect.options].map(o => o.value);
+    const current = themeSelect.value;
+    // Pick a different one
+    const others = options.filter(o => o !== current);
+    const pick = others[Math.floor(Math.random() * others.length)];
+    themeSelect.value = pick;
+    applyTheme(pick);
+    renderDuas(); // re-apply colors
+  }
+
+  function setCardFor(name) {
+    const display = document.getElementById('recipientDisplay');
+    if (name) {
+      display.textContent = 'Dear ' + name + ',';
+    } else {
+      display.textContent = '';
+    }
+  }
+
+  function applyTheme(theme) {
+    const card = document.getElementById('eidCard');
+    const themes = {
+      cream: {
+        bg: 'linear-gradient(160deg, #fefcf3 0%, #fff8e7 40%, #fef5d4 100%)',
+        shadow: '0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.6)',
+        arabicMain: '#2c1810', mainTitle: '#2c1810', subtitle: '#8b6914',
+        msgText: '#3d3225', arabicDua: '#2c5f2d', duaTranslit: '#8b6914',
+        duaTranslation: '#7a7a6a', sigText: '#2c1810',
+        bannerBg: 'linear-gradient(135deg, #2c1810, #4a2c1a)', bannerColor: '#f0d060',
+        nameBannerBg: 'linear-gradient(135deg, #2c5f2d, #3a7d3f)', nameBannerColor: '#f0d060',
+        ornamentOpacity: '0.2', eidLabel: '#b8941f',
+        geoBand: 'linear-gradient(90deg, #d4af37 0%, #f0d060 25%, #d4af37 50%, #f0d060 75%, #d4af37 100%)',
+        ornamentFill: '#d4af37'
+      },
+      dark: {
+        bg: 'linear-gradient(160deg, #0a1628 0%, #111d35 40%, #0d1a2e 100%)',
+        shadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.3), 0 0 40px rgba(212,175,55,0.05)',
+        arabicMain: '#d4af37', mainTitle: '#ffffff', subtitle: '#F4E4BA',
+        msgText: 'rgba(255,255,255,0.8)', arabicDua: '#8bc78e', duaTranslit: '#F4E4BA',
+        duaTranslation: 'rgba(255,255,255,0.5)', sigText: '#F4E4BA',
+        bannerBg: 'linear-gradient(135deg, #d4af37, #b8941f)', bannerColor: '#1a1a1a',
+        nameBannerBg: 'linear-gradient(135deg, #1e6b3a, #2a8f4e)', nameBannerColor: '#f0d060',
+        ornamentOpacity: '0.15', eidLabel: '#d4af37',
+        geoBand: 'linear-gradient(90deg, #d4af37 0%, #f0d060 25%, #d4af37 50%, #f0d060 75%, #d4af37 100%)',
+        ornamentFill: '#d4af37'
+      },
+      emerald: {
+        bg: 'linear-gradient(160deg, #0a3d2e 0%, #0d4f3a 40%, #0a3d2e 100%)',
+        shadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.25), 0 0 40px rgba(10,61,46,0.2)',
+        arabicMain: '#f0d060', mainTitle: '#ffffff', subtitle: '#c8e6c9',
+        msgText: 'rgba(255,255,255,0.82)', arabicDua: '#f0d060', duaTranslit: '#c8e6c9',
+        duaTranslation: 'rgba(255,255,255,0.5)', sigText: '#c8e6c9',
+        bannerBg: 'linear-gradient(135deg, #d4af37, #b8941f)', bannerColor: '#0a3d2e',
+        nameBannerBg: 'linear-gradient(135deg, #d4af37, #b8941f)', nameBannerColor: '#0a3d2e',
+        ornamentOpacity: '0.18', eidLabel: '#f0d060',
+        geoBand: 'linear-gradient(90deg, #d4af37 0%, #4caf50 25%, #d4af37 50%, #4caf50 75%, #d4af37 100%)',
+        ornamentFill: '#d4af37'
+      },
+      royal: {
+        bg: 'linear-gradient(160deg, #1a0a2e 0%, #2d1650 40%, #1a0a2e 100%)',
+        shadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.2), 0 0 40px rgba(45,22,80,0.3)',
+        arabicMain: '#f0d060', mainTitle: '#ffffff', subtitle: '#e1bee7',
+        msgText: 'rgba(255,255,255,0.8)', arabicDua: '#f0d060', duaTranslit: '#e1bee7',
+        duaTranslation: 'rgba(255,255,255,0.45)', sigText: '#e1bee7',
+        bannerBg: 'linear-gradient(135deg, #d4af37, #b8941f)', bannerColor: '#1a0a2e',
+        nameBannerBg: 'linear-gradient(135deg, #7b1fa2, #9c27b0)', nameBannerColor: '#f0d060',
+        ornamentOpacity: '0.15', eidLabel: '#ce93d8',
+        geoBand: 'linear-gradient(90deg, #d4af37 0%, #ce93d8 25%, #d4af37 50%, #ce93d8 75%, #d4af37 100%)',
+        ornamentFill: '#d4af37'
+      },
+      rose: {
+        bg: 'linear-gradient(160deg, #fff0f0 0%, #fce4ec 40%, #f8d7da 100%)',
+        shadow: '0 30px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(194,119,119,0.25), inset 0 1px 0 rgba(255,255,255,0.6)',
+        arabicMain: '#6d2c2c', mainTitle: '#4a1a1a', subtitle: '#b56576',
+        msgText: '#5a3535', arabicDua: '#6d4c41', duaTranslit: '#b56576',
+        duaTranslation: '#9e8585', sigText: '#4a1a1a',
+        bannerBg: 'linear-gradient(135deg, #6d2c2c, #8b4040)', bannerColor: '#fce4ec',
+        nameBannerBg: 'linear-gradient(135deg, #b56576, #c97b8b)', nameBannerColor: '#fff',
+        ornamentOpacity: '0.15', eidLabel: '#b56576',
+        geoBand: 'linear-gradient(90deg, #d4af37 0%, #e8a0a0 25%, #d4af37 50%, #e8a0a0 75%, #d4af37 100%)',
+        ornamentFill: '#c97b7b'
+      }
+    };
+
+    const t = themes[theme] || themes.cream;
+    card.style.background = t.bg;
+    card.style.boxShadow = t.shadow;
+    document.querySelector('.arabic-main').style.color = t.arabicMain;
+    document.querySelector('.main-title').style.color = t.mainTitle;
+    document.querySelector('.subtitle').style.color = t.subtitle;
+    document.querySelectorAll('.message-text p').forEach(p => p.style.color = t.msgText);
+    // Apply to all dua elements (dynamically rendered)
+    document.querySelectorAll('.arabic-dua').forEach(el => el.style.color = t.arabicDua);
+    document.querySelectorAll('.dua-translit').forEach(el => el.style.color = t.duaTranslit);
+    document.querySelectorAll('.dua-translation').forEach(el => el.style.color = t.duaTranslation);
+    document.querySelector('.signature-text').style.color = t.sigText;
+    document.querySelector('.family-banner').style.background = t.bannerBg;
+    document.querySelector('.family-banner').style.color = t.bannerColor;
+    document.querySelector('.recipient-name').style.background = t.nameBannerBg;
+    document.querySelector('.recipient-name').style.color = t.nameBannerColor;
+    document.querySelector('.eid-label').style.color = t.eidLabel;
+    document.querySelectorAll('.ornament').forEach(o => o.style.opacity = t.ornamentOpacity);
+    document.querySelectorAll('.geo-band').forEach(g => g.style.background = t.geoBand);
+    document.querySelectorAll('.ornament svg path').forEach(p => p.setAttribute('fill', t.ornamentFill));
+  }
+
+  function renderCard() {
+    const card = document.getElementById('eidCard');
+    return html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+      logging: false,
+      allowTaint: true
+    });
+  }
+
+  function downloadCard() {
+    const btn = document.getElementById('downloadBtn');
+    const status = document.getElementById('statusMsg');
+    btn.classList.add('loading');
+    btn.textContent = 'Generating...';
+    status.textContent = 'Rendering card as image...';
+
+    renderCard().then(canvas => {
+      const link = document.createElement('a');
+      const name = document.getElementById('nameInput').value.trim();
+      const fileName = name
+        ? 'eid-mubarak-' + name.toLowerCase().replace(/\s+/g, '-') + '.png'
+        : 'eid-mubarak-2026.png';
+
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      btn.classList.remove('loading');
+      btn.textContent = 'Download';
+      status.textContent = 'Downloaded: ' + fileName;
+      setTimeout(() => { status.textContent = ''; }, 3000);
+    }).catch(err => {
+      btn.classList.remove('loading');
+      btn.textContent = 'Download';
+      status.textContent = 'Error: ' + err.message;
+    });
+  }
+
+  function parseBulkNames(text) {
+    // Support comma-separated or one per line
+    return text
+      .split(/[\n,]+/)
+      .map(n => n.trim())
+      .filter(n => n.length > 0);
+  }
+
+  async function bulkDownload() {
+    const bulkText = document.getElementById('bulkNames').value;
+    const names = parseBulkNames(bulkText);
+
+    if (names.length === 0) {
+      document.getElementById('bulkProgress').textContent = 'Enter at least one name above.';
+      return;
+    }
+
+    const btn = document.getElementById('bulkBtn');
+    const progress = document.getElementById('bulkProgress');
+    const sender = document.getElementById('senderInput').value.trim() || 'Shaid & Family';
+    const theme = document.getElementById('themeSelect').value;
+
+    btn.classList.add('loading');
+    btn.textContent = 'Generating...';
+
+    // Apply sender, theme, and duas once
+    document.querySelector('.family-banner').textContent = sender;
+    applyTheme(theme);
+    renderDuas();
+
+    for (let i = 0; i < names.length; i++) {
+      const name = names[i];
+      progress.textContent = `Generating ${i + 1} of ${names.length}: ${name}...`;
+
+      // Set the name on the card
+      setCardFor(name);
+
+      // Small delay to let DOM render
+      await new Promise(r => setTimeout(r, 200));
+
+      try {
+        const canvas = await renderCard();
+        const link = document.createElement('a');
+        const fileName = 'eid-mubarak-' + name.toLowerCase().replace(/\s+/g, '-') + '.png';
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        // Delay between downloads so browser doesn't block them
+        await new Promise(r => setTimeout(r, 500));
+      } catch (err) {
+        progress.textContent = `Error on "${name}": ${err.message}`;
+        btn.classList.remove('loading');
+        btn.textContent = 'Download All Cards';
+        return;
+      }
+    }
+
+    progress.textContent = `Done! ${names.length} cards downloaded.`;
+    btn.classList.remove('loading');
+    btn.textContent = 'Download All Cards';
+
+    // Clear after a few seconds
+    setTimeout(() => { progress.textContent = ''; }, 5000);
+  }
+
+  // Render duas on page load
+  renderDuas();
+
+  // Apply on Enter key
+  document.getElementById('nameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') applyCard();
+  });
+  document.getElementById('senderInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') applyCard();
+  });
+</script>
+</body>
+</html>
